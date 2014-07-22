@@ -1,0 +1,2 @@
+string joint_name
+float32 slider_value
