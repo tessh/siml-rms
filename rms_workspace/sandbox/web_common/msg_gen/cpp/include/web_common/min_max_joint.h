@@ -23,26 +23,26 @@ struct min_max_joint_ {
 
   min_max_joint_()
   : name()
-  , min()
-  , max()
+  , minval()
+  , maxval()
   {
   }
 
   min_max_joint_(const ContainerAllocator& _alloc)
   : name(_alloc)
-  , min(_alloc)
-  , max(_alloc)
+  , minval(_alloc)
+  , maxval(_alloc)
   {
   }
 
   typedef std::vector<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > , typename ContainerAllocator::template rebind<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > >::other >  _name_type;
   std::vector<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > , typename ContainerAllocator::template rebind<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > >::other >  name;
 
-  typedef std::vector<float, typename ContainerAllocator::template rebind<float>::other >  _min_type;
-  std::vector<float, typename ContainerAllocator::template rebind<float>::other >  min;
+  typedef std::vector<float, typename ContainerAllocator::template rebind<float>::other >  _minval_type;
+  std::vector<float, typename ContainerAllocator::template rebind<float>::other >  minval;
 
-  typedef std::vector<float, typename ContainerAllocator::template rebind<float>::other >  _max_type;
-  std::vector<float, typename ContainerAllocator::template rebind<float>::other >  max;
+  typedef std::vector<float, typename ContainerAllocator::template rebind<float>::other >  _maxval_type;
+  std::vector<float, typename ContainerAllocator::template rebind<float>::other >  maxval;
 
 
   typedef boost::shared_ptr< ::web_common::min_max_joint_<ContainerAllocator> > Ptr;
@@ -73,12 +73,12 @@ template<class ContainerAllocator>
 struct MD5Sum< ::web_common::min_max_joint_<ContainerAllocator> > {
   static const char* value() 
   {
-    return "c58e8a363453d058b88c7245eada9b9a";
+    return "78bac6ec82d30f7d7c6ea1d1204cd27b";
   }
 
   static const char* value(const  ::web_common::min_max_joint_<ContainerAllocator> &) { return value(); } 
-  static const uint64_t static_value1 = 0xc58e8a363453d058ULL;
-  static const uint64_t static_value2 = 0xb88c7245eada9b9aULL;
+  static const uint64_t static_value1 = 0x78bac6ec82d30f7dULL;
+  static const uint64_t static_value2 = 0x7c6ea1d1204cd27bULL;
 };
 
 template<class ContainerAllocator>
@@ -96,8 +96,8 @@ struct Definition< ::web_common::min_max_joint_<ContainerAllocator> > {
   static const char* value() 
   {
     return "string[]  name\n\
-float32[] min\n\
-float32[] max\n\
+float32[] minval\n\
+float32[] maxval\n\
 \n\
 ";
   }
@@ -118,8 +118,8 @@ template<class ContainerAllocator> struct Serializer< ::web_common::min_max_join
   template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
   {
     stream.next(m.name);
-    stream.next(m.min);
-    stream.next(m.max);
+    stream.next(m.minval);
+    stream.next(m.maxval);
   }
 
   ROS_DECLARE_ALLINONE_SERIALIZER;
@@ -143,17 +143,17 @@ struct Printer< ::web_common::min_max_joint_<ContainerAllocator> >
       s << indent << "  name[" << i << "]: ";
       Printer<std::basic_string<char, std::char_traits<char>, typename ContainerAllocator::template rebind<char>::other > >::stream(s, indent + "  ", v.name[i]);
     }
-    s << indent << "min[]" << std::endl;
-    for (size_t i = 0; i < v.min.size(); ++i)
+    s << indent << "minval[]" << std::endl;
+    for (size_t i = 0; i < v.minval.size(); ++i)
     {
-      s << indent << "  min[" << i << "]: ";
-      Printer<float>::stream(s, indent + "  ", v.min[i]);
+      s << indent << "  minval[" << i << "]: ";
+      Printer<float>::stream(s, indent + "  ", v.minval[i]);
     }
-    s << indent << "max[]" << std::endl;
-    for (size_t i = 0; i < v.max.size(); ++i)
+    s << indent << "maxval[]" << std::endl;
+    for (size_t i = 0; i < v.maxval.size(); ++i)
     {
-      s << indent << "  max[" << i << "]: ";
-      Printer<float>::stream(s, indent + "  ", v.max[i]);
+      s << indent << "  maxval[" << i << "]: ";
+      Printer<float>::stream(s, indent + "  ", v.maxval[i]);
     }
   }
 };

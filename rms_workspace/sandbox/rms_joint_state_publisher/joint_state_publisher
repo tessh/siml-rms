@@ -28,6 +28,8 @@ class JointStatePublisher():
         self.free_joints = {}
         self.joint_list = [] # for maintaining the original order of the joints
         self.dependent_joints = get_param("dependent_joints", {})
+
+	
         
         # Find all non-fixed joints
         for child in robot.childNodes:
@@ -74,6 +76,7 @@ class JointStatePublisher():
             self.sources.append(rospy.Subscriber(source, JointState, self.source_cb))
 
         self.pub = rospy.Publisher('joint_states', JointState)
+	self.min_vals = rospy.Publisher('min_values', min_max_joint)
 	
 
     def source_cb(self, msg):
@@ -96,10 +99,16 @@ class JointStatePublisher():
             msg = JointState()
             msg.header.stamp = rospy.Time.now()
 
+ 	    idata = min_max_joint()
+
             # Add Free Joints
             for (name,joint) in self.free_joints.items():
                 msg.name.append(str(name))
                 msg.position.append(joint['value'])
+
+		idata.name.append(str(name))
+		idata.minval.append(joint['min'])
+ 	        idata.maxval.append(joint['max'])
 
             # Add Dependent Joints
             for (name,param) in self.dependent_joints.items():
@@ -109,16 +118,19 @@ class JointStatePublisher():
 
                 msg.name.append(str(name))
                 msg.position.append(value)
+		
+		idata.name.append(str(name))
+		idata.minval.append(joint['min'])
+ 	        idata.maxval.append(joint['max'])
 
             self.pub.publish(msg)
-	    self.min_vals = rospy.Publisher('min_values', min_max_joint)
-	    self.min_vals.publish(self.joint_list, self.free_joints[name]['min'], 0.0)
+	    self.min_vals.publish(idata)
             r.sleep()
 
 class JointStatePublisherGui(wx.Frame):
     def __init__(self, title, jsp):
 	# adding a subscriber to chatter function
-#	rospy.Subscriber("chatter", joint_states_web, self.callback)
+	rospy.Subscriber("chatter", JointState, self.callback)
         wx.Frame.__init__(self, None, -1, title, (-1, -1));
         self.jsp = jsp
         self.joint_map = {}
@@ -165,12 +177,15 @@ class JointStatePublisherGui(wx.Frame):
         self.update_values()
     
     def callback(self, data):
-    	rospy.loginfo(rospy.get_caller_id()+"Message: %s with %lf", data.joint_name, data.slider_value)
-        for (data.joint_name, joint_info) in self.joint_map.items():
-	    joint = joint_info['joint']
-	    joint_info['slidervalue'] = joint['min'] + (data.slider_value/100.0)*joint['max']
-	self.update_values()
-	
+    	rospy.loginfo("CallBack")
+	index = 0;
+        for (name,joint_info) in self.joint_map.items():
+            joint = joint_info['joint']
+	    rospy.loginfo("Zero: %lf and Data: %s", joint['zero'], data.name[index])
+            joint_info['slidervalue'] = self.valueToSlider(data.position[index], joint)
+	    index = index + 1
+        self.update_values()
+	rospy.loginfo("Index: %d", index)
 
     def update_values(self):
         for (name,joint_info) in self.joint_map.items():

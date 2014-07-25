@@ -1,11 +1,11 @@
 <launch>
 
-<include file="$(find pr2_description)/robots/upload_pr2.launch"></include>
+<include file="$(find gt_meka_description)/launch/simco_param_upload.launch"></include>
 
 <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
 
 <node pkg="rms_joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
-  <param name="use_gui" value="true"/>
+  <param name="use_gui" value="true"/>  
 </node>
 
 <node pkg="tf2_web_republisher" type="tf2_web_republisher" name="tf2_web_republisher"/>

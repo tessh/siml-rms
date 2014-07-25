@@ -1,3 +1,3 @@
 string[]  name
-float32[] min
-float32[] max
+float32[] minval
+float32[] maxval
