@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" /> 
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script> 
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script type="text/javascript" src="http://cdn.robotwebtools.org/keyboardteleopjs/current/keyboardteleop.min.js"></script>
+    <script type="text/javascript">
+	var originals = [];
+	var names = [];
+	var mins = [];
+	var maxs = [];
+	var positions;
+        var index = 0;
+
+	var ros = new ROSLIB.Ros({
+                url: 'ws://localhost:9090'
+        });
+	//initially listens to set up sliders, then publishes to update sliders/joint states
+            var joint_states = new ROSLIB.Topic({
+                ros: ros,
+                name: '/joint_states',
+                messageType: 'sensor_msgs/JointState'
+            });
+
+	var chatter = new ROSLIB.Topic({
+                ros: ros,
+                name: '/chatter',
+                messageType: 'sensor_msgs/JointState'
+            });
+
+        function init() {
+            // connect to ROS
+            
+	    
+            var listener = new ROSLIB.Topic({
+		ros: ros,
+		name: '/min_values',
+		messageType: 'web_common/min_max_joint' 
+            });
+	    
+	    
+	    listener.subscribe(function(message) {
+		//TODO have joint_state_publisher stop publishing this data
+		originals = message.name.slice(0);
+		mins = message.minval.slice(0);
+		maxs = message.maxval.slice(0);
+		console.log('Name: ' + names);
+		console.log('Min: ' + mins);
+		console.log('Max: ' + maxs);
+		listener.unsubscribe();
+		//make a bunch of sliders and labels and display buttons
+	    });
+		
+	    
+	   
+ 	    joint_states.subscribe(function(message) {
+		      names = message.name.slice(0);
+		      positions = message.position.slice(0); 
+		      console.log('Name: ' + names);
+		      console.log('Position: ' + positions);
+		      joint_states.unsubscribe();
+		      //positions[0] = 3.000;
+			var message = new ROSLIB.Message({
+			name: names,
+			position: positions
+			
+ 			});
+		joint_states.publish(message);
+		console.log('finished publishing positions');
+
+		      
+            });
+		
+	    
+	    
+	    
+	}
+	function loadGui(){
+	    
+
+	    var layout = document.getElementById("sliders");
+	    for( i = 0; i < originals.length; i++){
+		var newLabel = document.createElement("LABEL");
+		newLabel.innerHTML = originals[i];
+		
+		var newSlider = document.createElement("div");
+		newSlider.id = originals[i];
+		newSlider.setAttribute("style", "width: 200px");
+		var tagname = "#" + originals[i];
+ 		
+		//newSlider.appendChild(newContent);
+		//newSlider.innerhtml('hello');
+		layout.appendChild(newLabel);
+		//newLabel.append(newText);
+		layout.appendChild(newSlider);
+
+		
+		$(tagname).slider({
+		step: 0.01,
+                min: mins[i],
+                max: maxs[i],
+                value: positions[i],
+		range: "min",
+                slide: function(event, ui) {
+		index = names.indexOf(event.target.id);
+		positions[index] = parseFloat(ui.value);
+		console.log(event.target.id + " to value: " + positions[index]);
+	    	var message = new ROSLIB.Message({
+			name: names,
+			position: positions
+ 		});		
+		document.getElementById(newSlider.id).style.background = "blue";
+		chatter.publish(message);
+		//console.log('Value: ' + ui.value.toFixed(2));
+		}
+            });
+		console.log("finished");
+
+	    }
+		
+        }
+	
+    </script>
+</head>
+<body onload="init()">
+    <div id="sliders" style="height: 300px; overflow: auto; width: 250px" >		
+	<input type="button" onclick="loadGui()" value="Joint State Publisher"></input>
+   	
+    </div>
+</body>
+</html>

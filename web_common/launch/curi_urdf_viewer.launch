@@ -1,0 +1,23 @@
+<launch>
+
+<!--  <include file="$(find gt_meka_description)/launch/simco_param_upload.launch"></include> --> 
+  <include file="$(find web_common)/launch/upload_curi.launch"></include>  
+
+<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+
+<node pkg="rms_joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
+  <!-- <remap from="joint_states" to="humanoid_states/> -->
+  <param name="use_gui" value="true"/>  
+</node>
+
+<!-- <node pkg="tf" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 odom_combined world 100" />
+
+<node pkg="tf" type="static_transform_publisher" name="calibration_broadcaster" args="0.031 0 -.05 0 1 0 1 palm back 100" /> -->
+
+<node pkg="tf2_web_republisher" type="tf2_web_republisher" name="tf2_web_republisher"/>
+
+
+<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"></include>
+
+
+</launch>

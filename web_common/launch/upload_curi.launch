@@ -1,0 +1,11 @@
+<launch>
+<!--  <param name="/use_sim_time" value="true" /> -->
+
+<!-- load robot description format URDF -->
+<param name="robot_description" command="$(find xacro)/xacro.py '$(find gt_meka_description)/urdf/simco-groovy.urdf.xacro'" />
+
+<!-- the semantic description corresponding to the URDF -->
+<!-- <param name="robot_description_semantic" textfile="$(find simc_moveit)/config/simc.srdf" /> -->
+
+
+</launch>
